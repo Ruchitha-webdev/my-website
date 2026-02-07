@@ -15,7 +15,7 @@ html,body{
   overflow:hidden;
 }
 
-/* Common layout */
+/* layout */
 .page{
   position:absolute;
   inset:0;
@@ -49,14 +49,14 @@ button{
   font-weight:bold;
 }
 
-/* Letter */
+/* letter */
 .letter{
   font-size:20px;
   line-height:1.6;
   max-width:700px;
 }
 
-/* Cloud message */
+/* cloud msg */
 .cloud{
   position:absolute;
   background:white;
@@ -64,12 +64,11 @@ button{
   padding:8px 14px;
   border-radius:20px;
   font-size:14px;
-  white-space:nowrap;
   transform:translate(-50%,-120%);
   box-shadow:0 6px 15px rgba(0,0,0,0.3);
 }
 
-/* Hearts */
+/* hearts */
 .heart{
   position:absolute;
   top:-10px;
@@ -80,15 +79,7 @@ button{
   to{transform:translateY(110vh);opacity:0;}
 }
 
-/* Accepted graphics */
-.accept-box{
-  animation:zoomIn 1.2s ease;
-}
-@keyframes zoomIn{
-  from{transform:scale(0.6);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
-
+/* accepted graphics */
 .hug{
   font-size:90px;
   animation:hug 2s infinite;
@@ -96,7 +87,6 @@ button{
 @keyframes hug{
   50%{transform:scale(1.15);}
 }
-
 .kiss{
   font-size:50px;
   animation:kiss 1.5s infinite;
@@ -106,7 +96,6 @@ button{
   50%{opacity:1}
   100%{opacity:0}
 }
-
 .glow{
   text-shadow:0 0 20px #ff7eb3,0 0 40px #ff3b6f;
 }
@@ -117,7 +106,7 @@ button{
 
 <video id="cam" autoplay muted class="hidden"></video>
 
-<!-- PAGE 0 : PERMISSION -->
+<!-- PAGE 0 -->
 <div id="p0" class="page">
   <div>
     <h2 class="glow">Hey Acchu 🥹❤️</h2>
@@ -126,31 +115,26 @@ button{
   </div>
 </div>
 
-<!-- PAGE 1 : LETTER -->
+<!-- PAGE 1 -->
 <div id="p1" class="page hidden">
   <div class="letter">
     <p>
       Hey Acchu 😌❤️ <br><br>
-
       Important announcement 📢 <br><br>
-
       From the day you entered my life, my brain stopped working 🤯  
       and my heart started doing full-time duty for you 💓 <br><br>
-
       You are my happiness supplier 😍,  
       my stress creator 😤,  
       and my favorite human forever 🫶 <br><br>
-
       I tried acting normal… but I failed 😌  
       At this point, you have no escape 🙈❤️ <br><br>
-
       So listen carefully sir 😎💖
     </p>
     <button class="yes" onclick="goToQuestion()">NEXT ➡️</button>
   </div>
 </div>
 
-<!-- PAGE 2 : QUESTION -->
+<!-- PAGE 2 -->
 <div id="p2" class="page hidden">
   <div>
     <div class="big glow">Will you be my Valentine? 💖</div><br><br>
@@ -159,32 +143,28 @@ button{
   </div>
 </div>
 
-<!-- PAGE 3 : ACCEPTED -->
+<!-- PAGE 3 -->
 <div id="p3" class="page hidden">
-  <div class="accept-box">
+  <div>
     <div class="big glow">YES 💖 He accepted my proposal 🥹</div><br>
-
     <div class="hug">🤗🤗</div>
     <div class="kiss">😘💋😘</div>
-
-    <p style="margin-top:15px;">
-      Thanks for accepting my proposal ❤️
-    </p>
+    <p>Thanks for accepting my proposal ❤️</p>
   </div>
 </div>
 
 <script>
-  // page references (IMPORTANT FIX)
+/* references */
 const p0 = document.getElementById("p0");
 const p1 = document.getElementById("p1");
 const p2 = document.getElementById("p2");
 const p3 = document.getElementById("p3");
 const cam = document.getElementById("cam");
 
-/* Recording */
-let recorder, chunks=[];
+let recorder;
+let chunks = [];
 
-/* Falling hearts */
+/* hearts animation */
 setInterval(()=>{
   const h=document.createElement("div");
   h.className="heart";
@@ -195,32 +175,24 @@ setInterval(()=>{
   setTimeout(()=>h.remove(),8000);
 },300);
 
-/* Start recording */
+/* start recording */
 function startRecording(){
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert("Camera not supported 😢");
-    return;
-  }
-
   navigator.mediaDevices.getUserMedia({video:true,audio:true})
-    .then(s=>{
-      cam.srcObject = s;
-      recorder = new MediaRecorder(s);
-      recorder.ondataavailable = e => chunks.push(e.data);
+    .then(stream=>{
+      cam.srcObject=stream;
+      recorder=new MediaRecorder(stream);
+      recorder.ondataavailable=e=>chunks.push(e.data);
       recorder.start();
 
-      // SHOW LETTER PAGE
       p0.classList.add("hidden");
       p1.classList.remove("hidden");
     })
-    .catch(err=>{
+    .catch(()=>{
       alert("Please allow camera & mic 🙏");
-      console.error(err);
     });
 }
 
-
-/* Next page */
+/* next */
 function goToQuestion(){
   p1.classList.add("hidden");
   p2.classList.remove("hidden");
@@ -230,7 +202,7 @@ function goToQuestion(){
   btn.style.top="55%";
 }
 
-/* NO button logic */
+/* no button */
 let noCount=0;
 const noMsgs=[
   "Please don’t choose NO 🥺",
@@ -253,19 +225,18 @@ function moveNo(){
   if(old) old.remove();
 
   const cloud=document.createElement("div");
-  cloud.className="cloud";
   cloud.id="cloudMsg";
+  cloud.className="cloud";
   cloud.innerHTML=noMsgs[noCount%noMsgs.length];
   cloud.style.left=(x+btn.offsetWidth/2)+"px";
   cloud.style.top=y+"px";
 
   document.body.appendChild(cloud);
   setTimeout(()=>cloud.remove(),1500);
-
   noCount++;
 }
 
-/* Accepted */
+/* accepted */
 function accepted(){
   p2.classList.add("hidden");
   p3.classList.remove("hidden");
@@ -285,4 +256,3 @@ function accepted(){
 
 </body>
 </html>
-
