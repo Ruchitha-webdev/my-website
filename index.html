@@ -174,6 +174,13 @@ button{
 </div>
 
 <script>
+  // page references (IMPORTANT FIX)
+const p0 = document.getElementById("p0");
+const p1 = document.getElementById("p1");
+const p2 = document.getElementById("p2");
+const p3 = document.getElementById("p3");
+const cam = document.getElementById("cam");
+
 /* Recording */
 let recorder, chunks=[];
 
@@ -190,15 +197,28 @@ setInterval(()=>{
 
 /* Start recording */
 function startRecording(){
-  navigator.mediaDevices.getUserMedia({video:true,audio:true}).then(s=>{
-    cam.srcObject=s;
-    recorder=new MediaRecorder(s);
-    recorder.ondataavailable=e=>chunks.push(e.data);
-    recorder.start();
-    p0.classList.add("hidden");
-    p1.classList.remove("hidden");
-  });
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Camera not supported 😢");
+    return;
+  }
+
+  navigator.mediaDevices.getUserMedia({video:true,audio:true})
+    .then(s=>{
+      cam.srcObject = s;
+      recorder = new MediaRecorder(s);
+      recorder.ondataavailable = e => chunks.push(e.data);
+      recorder.start();
+
+      // SHOW LETTER PAGE
+      p0.classList.add("hidden");
+      p1.classList.remove("hidden");
+    })
+    .catch(err=>{
+      alert("Please allow camera & mic 🙏");
+      console.error(err);
+    });
 }
+
 
 /* Next page */
 function goToQuestion(){
